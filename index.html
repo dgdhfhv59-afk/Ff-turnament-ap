@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Arena - ESports Tournament App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.min.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+    const { 
+      Trophy, Shield, Wallet, Users, Tv, Award, Settings, Bell, Plus, CheckCircle, 
+      AlertCircle, Play, Eye, Flame, Lock, Unlock, ArrowUpRight, ArrowDownLeft, 
+      Search, Filter, ChevronRight, Copy, Check, Upload, UserCheck, UserX, DirectInbox,
+      Sparkles, Zap, Crosshair, Star, Share2, HelpCircle, RefreshCw, LogOut, DollarSign
+    } = lucideReact;
+
+    const INITIAL_TOURNAMENTS = [
+      {
+        id: 'ff-101',
+        title: 'Free Fire Grand Championship Season 14',
+        game: 'Free Fire',
+        category: 'Squad',
+        map: 'Bermuda Remastered',
+        date: 'Today',
+        time: '07:30 PM IST',
+        prizePool: 5000,
+        perKill: 50,
+        entryFee: 100,
+        totalSlots: 48,
+        filledSlots: 42,
+        status: 'Upcoming',
+        roomId: 'FF-884920',
+        roomPass: '9982',
+        image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80',
+        rules: [
+          'Emulators are strictly prohibited.',
+          'Hacking or using 3rd party scripts will result in an instant ban & forfeit.',
+          'Must join room 5 mins prior to match start.',
+          'Upload victory/kill screenshot within 15 mins post-match.'
+        ]
+      },
+      {
+        id: 'bgmi-202',
+        title: 'BGMI Conqueror Showdown T1',
+        game: 'BGMI',
+        category: 'Squad',
+        map: 'Erangel 2.0',
+        date: 'Today',
+        time: '09:00 PM IST',
+        prizePool: 12000,
+        perKill: 100,
+        entryFee: 250,
+        totalSlots: 100,
+        filledSlots: 87,
+        status: 'Upcoming',
+        roomId: 'BGMI-99120',
+        roomPass: '7721',
+        image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=800&q=80',
+        rules: [
+          'Level 40+ BGMI Account required.',
+          'iPad/Tablet players allowed in tablet brackets only.',
+          'Team Teaming up will lead to zero points and permanent ban.'
+        ]
+      },
+      {
+        id: 'ff-102',
+        title: 'Free Fire Rush Hour TDM 4v4',
+        game: 'Free Fire',
+        category: 'TDM 4v4',
+        map: 'CS Arena',
+        date: 'Tomorrow',
+        time: '04:00 PM IST',
+        prizePool: 1500,
+        perKill: 25,
+        entryFee: 50,
+        totalSlots: 8,
+        filledSlots: 6,
+        status: 'Upcoming',
+        roomId: 'FF-330192',
+        roomPass: '1234',
+        image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80',
+        rules: ['Best of 7 Clash Squad format.', 'No Grenades allowed in TDM.']
+      }
+    ];
+
+    const INITIAL_USER = {
+      name: 'Nexus_Pro',
+      ign: 'NEXUS★GOD99',
+      bgmiId: '5519820391',
+      freefireId: '887201923',
+      avatar: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&w=200&q=80',
+      rank: 'Grandmaster',
+      level: 68,
+      wallet: { total: 1450, winnings: 1100, deposit: 250, bonus: 100 },
+      stats: { matches: 142, wins: 38, kills: 612, kdRatio: 4.31, winRate: 26.7, headshotRate: 48.5, totalEarned: 18500 },
+      squad: { name: 'Soul Executioners', tag: 'SOUL', role: 'Leader / ICL', membersCount: 4 }
+    };
+
+    function App() {
+      const [activeTab, setActiveTab] = useState('matches');
+      const [user, setUser] = useState(INITIAL_USER);
+      const [tournaments, setTournaments] = useState(INITIAL_TOURNAMENTS);
+      const [gameFilter, setGameFilter] = useState('All');
+      const [joinedMatches, setJoinedMatches] = useState(['ff-101']);
+      const [selectedMatch, setSelectedMatch] = useState(null);
+      const [selectedSlot, setSelectedSlot] = useState(null);
+
+      const filteredTournaments = tournaments.filter(t => gameFilter === 'All' || t.game === gameFilter);
+
+      return (
+        <div className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-20">
+          {/* Header */}
+          <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Flame className="w-6 h-6 text-amber-400 animate-pulse" />
+              <h1 className="text-lg font-black text-white">NEXUS<span className="text-amber-400">ARENA</span></h1>
+            </div>
+            <div className="bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700 flex items-center gap-2">
+              <Wallet className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs font-bold text-emerald-400">₹{user.wallet.total}</span>
+            </div>
+          </header>
+
+          {/* Body Content */}
+          <main className="p-4 max-w-4xl mx-auto space-y-6">
+            {activeTab === 'matches' && (
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  {['All', 'Free Fire', 'BGMI'].map(g => (
+                    <button key={g} onClick={() => setGameFilter(g)} className={`px-4 py-1.5 rounded-xl text-xs font-bold ${gameFilter === g ? 'bg-cyan-500 text-slate-950' : 'bg-slate-900 text-slate-400 border border-slate-800'}`}>
+                      {g}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {filteredTournaments.map(match => (
+                    <div key={match.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="text-[10px] bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-0.5 rounded font-bold uppercase">{match.game}</span>
+                          <h3 className="font-bold text-sm text-white mt-1">{match.title}</h3>
+                        </div>
+                        <span className="text-xs text-amber-300 font-bold">₹{match.entryFee} Entry</span>
+                      </div>
+                      <div className="grid grid-cols-3 bg-slate-950 p-2 rounded-xl text-center text-xs">
+                        <div><p className="text-slate-500 text-[10px]">Prize</p><p className="font-bold text-emerald-400">₹{match.prizePool}</p></div>
+                        <div><p className="text-slate-500 text-[10px]">Per Kill</p><p className="font-bold text-cyan-400">₹{match.perKill}</p></div>
+                        <div><p className="text-slate-500 text-[10px]">Slots</p><p className="font-bold text-white">{match.filledSlots}/{match.totalSlots}</p></div>
+                      </div>
+                      <button onClick={() => setSelectedMatch(match)} className="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-black text-xs rounded-xl uppercase">
+                        {joinedMatches.includes(match.id) ? 'View Room ID' : 'Join Match'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'academy' && (
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                <div className="flex items-center gap-4">
+                  <img src={user.avatar} className="w-14 h-14 rounded-2xl object-cover ring-2 ring-cyan-500" />
+                  <div>
+                    <h2 className="font-bold text-base text-white">{user.name}</h2>
+                    <p className="text-xs text-amber-400 font-bold">{user.rank} • Level {user.level}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 bg-slate-950 p-3 rounded-xl text-center text-xs">
+                  <div><p className="text-slate-500 text-[10px]">K/D Ratio</p><p className="font-bold text-white">{user.stats.kdRatio}</p></div>
+                  <div><p className="text-slate-500 text-[10px]">Win Rate</p><p className="font-bold text-emerald-400">{user.stats.winRate}%</p></div>
+                  <div><p className="text-slate-500 text-[10px]">Headshot</p><p className="font-bold text-red-400">{user.stats.headshotRate}%</p></div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'wallet' && (
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                <h3 className="text-xs font-bold text-slate-400 uppercase">Available Balance</h3>
+                <div className="text-3xl font-black text-emerald-400">₹{user.wallet.total}</div>
+                <div className="flex gap-2">
+                  <button className="flex-1 py-3 bg-emerald-500 text-slate-950 text-xs font-black rounded-xl">Add Cash (UPI)</button>
+                  <button className="flex-1 py-3 bg-slate-800 text-slate-200 text-xs font-bold rounded-xl border border-slate-700">Withdraw</button>
+                </div>
+              </div>
+            )}
+          </main>
+
+          {/* Modal */}
+          {selectedMatch && (
+            <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 relative">
+                <button onClick={() => setSelectedMatch(null)} className="absolute top-3 right-3 text-slate-400 text-sm">✕</button>
+                <h3 className="font-bold text-base text-white">{selectedMatch.title}</h3>
+                <div className="bg-slate-950 p-3 rounded-xl space-y-1 font-mono text-xs">
+                  <p className="text-slate-400">Room ID: <span className="text-cyan-400 font-bold">{selectedMatch.roomId}</span></p>
+                  <p className="text-slate-400">Password: <span className="text-amber-300 font-bold">{selectedMatch.roomPass}</span></p>
+                </div>
+                <button onClick={() => setSelectedMatch(null)} className="w-full py-2.5 bg-slate-800 text-slate-200 text-xs font-bold rounded-xl border border-slate-700">Done</button>
+              </div>
+            </div>
+          )}
+
+          {/* Bottom Navigation */}
+          <nav className="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 py-2 flex justify-around">
+            <button onClick={() => setActiveTab('matches')} className={`flex flex-col items-center text-[10px] ${activeTab === 'matches' ? 'text-cyan-400 font-bold' : 'text-slate-500'}`}>
+              <Trophy className="w-5 h-5" /> Matches
+            </button>
+            <button onClick={() => setActiveTab('academy')} className={`flex flex-col items-center text-[10px] ${activeTab === 'academy' ? 'text-cyan-400 font-bold' : 'text-slate-500'}`}>
+              <Award className="w-5 h-5" /> Stats
+            </button>
+            <button onClick={() => setActiveTab('wallet')} className={`flex flex-col items-center text-[10px] ${activeTab === 'wallet' ? 'text-cyan-400 font-bold' : 'text-slate-500'}`}>
+              <Wallet className="w-5 h-5" /> Wallet
+            </button>
+          </nav>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
